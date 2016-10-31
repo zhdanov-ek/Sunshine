@@ -4,6 +4,7 @@
 
 package com.example.gek.sunshine;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -16,8 +17,10 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -63,7 +66,7 @@ public class ForecastFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle saveInstanceState){
+    public View onCreateView(LayoutInflater inflater, final ViewGroup container, Bundle saveInstanceState){
         // container  нужен для передачи параметров от родительского конейнера для нашего вью
         // false указывает на то, что не следует полученое вью вставлять в контейнер
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
@@ -83,6 +86,14 @@ public class ForecastFragment extends Fragment {
         // ищем вью не с корня, а с родительского вью  - rootView, куда и вставлен наш ListView
         ListView lvForecast = (ListView) rootView.findViewById(R.id.listview_forecast);
         lvForecast.setAdapter(adapter);
+
+        lvForecast.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//                Toast.makeText(getContext(), "Click on item " + position, Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(getContext(), DetailActivity.class));
+            }
+        });
 
         return rootView;
     }

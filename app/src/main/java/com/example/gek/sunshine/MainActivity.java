@@ -15,6 +15,5 @@ public class MainActivity extends AppCompatActivity {
                     .add(R.id.container_main, new ForecastFragment())
                     .commit();
         }
-
     }
 }
