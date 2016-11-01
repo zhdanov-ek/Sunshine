@@ -4,10 +4,13 @@
 
 package com.example.gek.sunshine;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.text.format.Time;
 import android.util.Log;
@@ -20,6 +23,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.json.JSONArray;
@@ -48,6 +52,12 @@ public class ForecastFragment extends Fragment {
     }
 
     @Override
+    public void onStart() {
+        super.onStart();
+        updateWeather();
+    }
+
+    @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         // заполняем меню с xml файла
         inflater.inflate(R.menu.forecastfragment, menu);
@@ -55,33 +65,41 @@ public class ForecastFragment extends Fragment {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Проверяем наша ли кнопка нажата и запускаем AsyncTask на запрос данных с сервера и парсинг
-        if (item.getItemId() == R.id.action_refresh) {
-//                Toast.makeText(getContext(), "click Button Refresh", Toast.LENGTH_SHORT).show();
-                FetchWeatherTask fetchWeatherTask = new FetchWeatherTask();
-                fetchWeatherTask.execute("Cherkassy");
+        switch (item.getItemId()) {
+            // обновляем погоду опрашивая сервер
+            case R.id.action_refresh:
+                updateWeather();
+                return true;
+            // окно настроек
+            case R.id.action_settings:
+                startActivity(new Intent(getActivity(), SettingsActivity.class), null);
                 return true;
             }
         return super.onOptionsItemSelected(item);
     }
 
+
+    /** Запрос погоды на сервер и обновление адаптера в отдельном методе */
+    private void updateWeather(){
+        // Получаем SharedPreferences через активити и уже с него берем нужный ключ
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        String location = sp.getString(getString(R.string.pref_location_key),
+                getString(R.string.pref_location_default));
+//                Toast.makeText(getActivity(), "Location - " + location, Toast.LENGTH_SHORT).show();
+        FetchWeatherTask fetchWeatherTask = new FetchWeatherTask();
+        fetchWeatherTask.execute(location);
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, final ViewGroup container, Bundle saveInstanceState){
+
         // container  нужен для передачи параметров от родительского конейнера для нашего вью
         // false указывает на то, что не следует полученое вью вставлять в контейнер
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
-        ArrayList<String> list = new ArrayList<>();
-        list.add("Today Sunny - 88/63");
-        list.add("Tomorrow - Foggy - 70/46");
-        list.add("Weds - Cloudy - 72/63");
-        list.add("Thurs - Rainy - 64/51");
-        list.add("Fri - Foggy - 70-46");
-        list.add("Sat - Sunny - 76-68");
-
-
+        // создаем адаптер на вход которому подаем пустой список
         adapter = new ArrayAdapter<>(getActivity(), R.layout.list_item_forecast,
-                R.id.list_item_forecast_textview, list);
+                R.id.list_item_forecast_textview, new ArrayList<String>());
 
         // ищем вью не с корня, а с родительского вью  - rootView, куда и вставлен наш ListView
         ListView lvForecast = (ListView) rootView.findViewById(R.id.listview_forecast);
@@ -91,7 +109,12 @@ public class ForecastFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 //                Toast.makeText(getContext(), "Click on item " + position, Toast.LENGTH_SHORT).show();
-                startActivity(new Intent(getContext(), DetailActivity.class));
+                Intent intentDetail = new Intent(getContext(), DetailActivity.class);
+
+                String forecast = ((TextView) view.findViewById(R.id.list_item_forecast_textview))
+                        .getText().toString();
+                intentDetail.putExtra(Intent.EXTRA_TEXT, forecast);
+                startActivity(intentDetail);
             }
         });
 
@@ -111,7 +134,7 @@ public class ForecastFragment extends Fragment {
     private class FetchWeatherTask extends AsyncTask<String, Integer, String[]>{
         // Константу-таг для логов формируем по имени класса
 //        private final String LOG_TAG = FetchWeatherTask.class.getSimpleName();
-        private final String LOG_TAG = "MyLog";
+        private final String LOG_TAG = "MyLog: ";
 
         @Override
         protected String[] doInBackground(String... params) {
@@ -146,7 +169,9 @@ public class ForecastFragment extends Fragment {
                         .build();
 
                 URL url = new URL(fullPathUri.toString());
+
                 urlConnection = (HttpURLConnection)url.openConnection();
+                urlConnection.setRequestMethod("GET");
                 urlConnection.connect();
 
                 // Read the input stream into a String
@@ -175,14 +200,14 @@ public class ForecastFragment extends Fragment {
                 try {
                     return getWeatherDataFromJson(forecastJson, 7);
                 } catch (JSONException e) {
-                    Log.e(LOG_TAG, e.getMessage());
+                    Log.e(LOG_TAG, "JSON Exception " + e.getMessage(), e);
                     e.printStackTrace();
                 }
 
 
             } catch (IOException e){
                 e.printStackTrace();
-                Log.e(LOG_TAG, "IOException: ", e);
+                Log.e(LOG_TAG, "IOException: " + e.getMessage(), e);
                 return null;
             } finally {
                 // в конце закрываем соединение и поток если они открыты
@@ -193,7 +218,7 @@ public class ForecastFragment extends Fragment {
                     try {
                         reader.close();
                     } catch (final IOException e) {
-                        Log.e(LOG_TAG, "Error closing stream", e);
+                        Log.e(LOG_TAG, "Error closing stream ", e);
                     }
                 }
             }

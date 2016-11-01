@@ -1,6 +1,15 @@
 <resources>
     <string name="app_name">Sunshine</string>
     <string name="title_activity_detail">Details</string>
+    <string name="title_activity_settings">Settings</string>
 
     <string name="action_refresh" translatable="false">Refresh</string>
+    <string name="action_settings" translatable="false">Settings</string>
+
+
+    <string name="pref_location_label">Location</string>
+    <!-- Ключ для доступа к опции -->
+    <string name="pref_location_key" translatable="false">location</string>
+    <!-- Значение по умолчанию -->
+    <string name="pref_location_default" translatable="false">Cherkassy</string>
 </resources>
