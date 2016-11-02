@@ -10,6 +10,7 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.Preference;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.text.format.Time;
@@ -43,6 +44,7 @@ import java.util.ArrayList;
 
 public class ForecastFragment extends Fragment {
     private ArrayAdapter<String> adapter;
+    private final String LOG_TAG = "MyLog: ";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -69,11 +71,14 @@ public class ForecastFragment extends Fragment {
             // обновляем погоду опрашивая сервер
             case R.id.action_refresh:
                 updateWeather();
-                return true;
+                break;
+            case R.id.action_map:
+                openPreferredLocationInMap();
+                break;
             // окно настроек
             case R.id.action_settings:
                 startActivity(new Intent(getActivity(), SettingsActivity.class), null);
-                return true;
+                break;
             }
         return super.onOptionsItemSelected(item);
     }
@@ -257,6 +262,13 @@ public class ForecastFragment extends Fragment {
         dayTime = new Time();
 
 
+        // Cмотрим в настройках формат вывода температуры
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        String unitType = sharedPreferences.getString(
+                getString(R.string.pref_units_key),
+                getString(R.string.pref_units_metric));
+
+
         // Перебираем каждую запись (день) в массиве json "list" и формируем инфу за день
         String[] resultDays = new String[numDays];
         for (int i = 0; i < jsonArrayListDay.length(); i++) {
@@ -279,12 +291,52 @@ public class ForecastFragment extends Fragment {
             double max = jsonObjectDay.getJSONObject(TEMPERATURE).getDouble(MAX);
             double min = jsonObjectDay.getJSONObject(TEMPERATURE).getDouble(MIN);
 
-            maxAndMin = Math.round(max) + " / " + Math.round(min);
-
+            maxAndMin = formatMaxMin(max, min, unitType);
             resultDays[i] = day + " - " + description + " - " + maxAndMin;
 
         }
         return resultDays;
+    }
+
+
+    /** Форматирование температуры под указанную систему исчисления */
+    private String formatMaxMin(double max, double min, String unitType) {
+        if (unitType.equals(getString(R.string.pref_units_imperial))) {
+            max = (max * 1.8) + 32;
+            min = (min * 1.8) + 32;
+        } else if (!unitType.equals(getString(R.string.pref_units_metric))) {
+            Log.d(LOG_TAG, " Unit type not found: " + unitType);
+        }
+        long roundedMax = Math.round(max);
+        long roundedMin = Math.round(min);
+
+        return roundedMax + " / " + roundedMin;
+    }
+
+
+    /** Создание интента для открытия карты. В параметр передаем город указанный в настройках */
+    private void openPreferredLocationInMap() {
+        SharedPreferences sharedPrefs =
+                PreferenceManager.getDefaultSharedPreferences(getActivity());
+        String location = sharedPrefs.getString(
+                getString(R.string.pref_location_key),
+                getString(R.string.pref_location_default));
+
+        // Using the URI scheme for showing a location found on a map.  This super-handy
+        // intent can is detailed in the "Common Intents" page of Android's developer site:
+        // http://developer.android.com/guide/components/intents-common.html#Maps
+        Uri geoLocation = Uri.parse("geo:0,0?").buildUpon()
+                .appendQueryParameter("q", location)
+                .build();
+
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setData(geoLocation);
+
+        if (intent.resolveActivity(getActivity().getPackageManager()) != null) {
+            startActivity(intent);
+        } else {
+            Log.d(LOG_TAG, "Couldn't call " + location + ", no receiving apps installed!");
+        }
     }
 
 }
