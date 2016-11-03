@@ -4,13 +4,11 @@
 
 package com.example.gek.sunshine;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.preference.Preference;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.text.format.Time;
@@ -25,7 +23,6 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -62,7 +59,7 @@ public class ForecastFragment extends Fragment {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         // заполняем меню с xml файла
-        inflater.inflate(R.menu.forecastfragment, menu);
+        inflater.inflate(R.menu.forecast_fragment_menu, menu);
     }
 
     @Override

@@ -2,20 +2,19 @@ package com.example.gek.sunshine;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 
-
-import android.support.v7.view.menu.MenuItemImpl;
 import android.support.v7.widget.ShareActionProvider;
 import android.support.v7.widget.Toolbar;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 
 
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,48 +33,11 @@ public class DetailActivity extends AppCompatActivity {
 
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.detailfragment, menu);
-
-        // Retrieve the share menu item
-        MenuItem menuItem = menu.findItem(R.id.action_share);
-
-        ShareActionProvider mShareActionProvider = (ShareActionProvider) menuItem.getActionProvider();
-
-//        ShareActionProvider mShareActionProvider =
-//                (ShareActionProvider) MenuItemCompat.getActionProvider(menuItem);
-        Intent shareIntent = new Intent(Intent.ACTION_SEND);
-        shareIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
-        shareIntent.setType("text/plain");
-//        shareIntent.putExtra(Intent.EXTRA_TEXT, forecast + FORECAST_SHARE_HASHTAG);
-        shareIntent.putExtra(Intent.EXTRA_TEXT, "sdfg" + "dfgdfg");
-
-        mShareActionProvider.setShareIntent(shareIntent);
-
-
-
-
-        // Get the provider and hold onto it to set/change the share intent.
-//            ShareActionProvider mShareActionProvider =
-//                    (ShareActionProvider) MenuItemCompat.getActionProvider(menuItem);
-//
-//            // Attach an intent to this ShareActionProvider.  You can update this at any time,
-//            // like when the user selects a new piece of data they might like to share.
-//            if (mShareActionProvider != null ) {
-//                mShareActionProvider.setShareIntent(createShareForecastIntent());
-//            } else {
-//                Log.d(LOG_TAG, "Share Action Provider is null?");
-//            }
-
-        return true;
-    }
-
-    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
 
-        // Добавляем акшен бар
+        // Добавляем екшен бар
         Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
         setSupportActionBar(myToolbar);
 
@@ -93,15 +55,14 @@ public class DetailActivity extends AppCompatActivity {
 
         private String forecast;
         private static final String FORECAST_SHARE_HASHTAG = " #SunshineApp";
+        private final String LOG_TAG = "MyLog: ";
 
-
-        @Override
-        public void onCreate(@Nullable Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-//            // Указываем, что в этом фрагменте будет меню
-//            setHasOptionsMenu(true);
+        public DetailFragment() {
+            setHasOptionsMenu(true);
         }
 
+
+        // Создаем вью нашего фрагмента на основании лаяута
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
             View viewRoot = inflater.inflate(R.layout.fragment_detail, container, false);
@@ -116,28 +77,30 @@ public class DetailActivity extends AppCompatActivity {
             return viewRoot;
         }
 
-//        @Override
-//        public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-//            inflater.inflate(R.menu.detailfragment, menu);
-//
-//            // Retrieve the share menu item
-//            MenuItem menuItem = menu.findItem(R.id.action_share);
-//
-//            // Get the provider and hold onto it to set/change the share intent.
-//            ShareActionProvider mShareActionProvider =
-//                    (ShareActionProvider) MenuItemCompat.getActionProvider(menuItem);
-//
-//            // Attach an intent to this ShareActionProvider.  You can update this at any time,
-//            // like when the user selects a new piece of data they might like to share.
-//            if (mShareActionProvider != null ) {
-//                mShareActionProvider.setShareIntent(createShareForecastIntent());
-//            } else {
-//                Log.d(LOG_TAG, "Share Action Provider is null?");
-//            }
-//        }
 
+        // Наполняем меню с шаблона и подвязываем виджет ShareActionProvider
+        @Override
+        public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+            // Наполнение меню
+            inflater.inflate(R.menu.detail_fragment_menu, menu);
 
+            // Ищем наш виджет ShareActionProvider
+            MenuItem menuItem = menu.findItem(R.id.action_share);
 
+            // Определяем объект для управления нашим виджетом
+            ShareActionProvider mShareActionProvider =
+                    (ShareActionProvider) MenuItemCompat.getActionProvider(menuItem);
+
+            // Attach an intent to this ShareActionProvider.  You can update this at any time,
+            // like when the user selects a new piece of data they might like to share.
+            if (mShareActionProvider != null ) {
+                mShareActionProvider.setShareIntent(createShareForecastIntent());
+            } else {
+                Log.d(LOG_TAG, "Share Action Provider is null?");
+            }
+        }
+
+        // Описываем обработчики на другие кнопки (крроме ShareActionProvider)
         @Override
         public boolean onOptionsItemSelected(MenuItem item) {
             switch (item.getItemId()) {
@@ -148,15 +111,15 @@ public class DetailActivity extends AppCompatActivity {
             }
             return super.onOptionsItemSelected(item);
         }
-    }
-//    private Intent createShareForecastIntent() {
-//        Intent shareIntent = new Intent(Intent.ACTION_SEND);
-//        shareIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
-//        shareIntent.setType("text/plain");
-////        shareIntent.putExtra(Intent.EXTRA_TEXT, forecast + FORECAST_SHARE_HASHTAG);
-//        shareIntent.putExtra(Intent.EXTRA_TEXT, "sdfg" + "dfgdfg");
-//        return shareIntent;
-//    }
 
+        // Создание неявного интента для пересылки прогноза суточного
+        private Intent createShareForecastIntent() {
+            Intent shareIntent = new Intent(Intent.ACTION_SEND);
+            shareIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
+            shareIntent.setType("text/plain");
+            shareIntent.putExtra(Intent.EXTRA_TEXT, forecast + FORECAST_SHARE_HASHTAG);
+            return shareIntent;
+        }
+    }
 
 }
