@@ -23,7 +23,7 @@ import android.widget.TextView;
 
 
 /**
- * Created by gek on 31.10.16.
+ * Отображение конкретного дня выбранного в списке
  */
 
 //todo кнопка назад не работает - запускает еще одну копию самого себя
@@ -39,7 +39,9 @@ public class DetailActivity extends AppCompatActivity {
 
         // Добавляем екшен бар
         Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
+        myToolbar.setLogo(R.mipmap.ic_launcher);
         setSupportActionBar(myToolbar);
+
 
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
@@ -58,6 +60,8 @@ public class DetailActivity extends AppCompatActivity {
         private final String LOG_TAG = "MyLog: ";
 
         public DetailFragment() {
+            // Указываем, что будем использовать меню в фрагменте.
+            // Без этого не вызовется onCreateOptionsMenu
             setHasOptionsMenu(true);
         }
 
@@ -115,6 +119,8 @@ public class DetailActivity extends AppCompatActivity {
         // Создание неявного интента для пересылки прогноза суточного
         private Intent createShareForecastIntent() {
             Intent shareIntent = new Intent(Intent.ACTION_SEND);
+
+            // Флаг позволяет вернутся в саншайн из вызванного приложения по кнопке БЕК
             shareIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
             shareIntent.setType("text/plain");
             shareIntent.putExtra(Intent.EXTRA_TEXT, forecast + FORECAST_SHARE_HASHTAG);

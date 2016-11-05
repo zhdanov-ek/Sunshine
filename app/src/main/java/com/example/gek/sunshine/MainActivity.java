@@ -1,5 +1,6 @@
 package com.example.gek.sunshine;
 
+import android.app.ActionBar;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -16,11 +17,14 @@ import android.widget.Toast;
 public class MainActivity extends AppCompatActivity {
     private final String LOG_TAG = "MyLog: ";
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        ActionBar ab = getActionBar();
+//                getActivity().getActionBar().setIcon(getResources().getDrawable(R.mipmap.ic_launcher));
+
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.container_main, new ForecastFragment())
