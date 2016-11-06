@@ -10,6 +10,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -22,8 +23,10 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        ActionBar ab = getActionBar();
-//                getActivity().getActionBar().setIcon(getResources().getDrawable(R.mipmap.ic_launcher));
+        // Добавляем тулбар бар
+        Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar_main);
+        myToolbar.setLogo(R.mipmap.ic_launcher);
+        setSupportActionBar(myToolbar);
 
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()

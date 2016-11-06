@@ -37,8 +37,8 @@ public class DetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
 
-        // Добавляем екшен бар
-        Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
+        // Добавляем тулбар бар
+        Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar_detail);
         myToolbar.setLogo(R.mipmap.ic_launcher);
         setSupportActionBar(myToolbar);
 

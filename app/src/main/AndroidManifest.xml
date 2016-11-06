@@ -9,7 +9,6 @@
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:logo="@mipmap/ic_launcher"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name="com.example.gek.sunshine.MainActivity">
@@ -20,11 +19,9 @@
             </intent-filter>
         </activity>
 
-        <!-- Добавляет связь с родительской активити, что дает нам кнопку UP -->
         <activity
             android:name=".DetailActivity"
-            android:label="@string/title_activity_detail"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar">
+            android:label="@string/title_activity_detail">
         </activity>
 
         <activity

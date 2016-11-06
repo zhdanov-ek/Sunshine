@@ -6,7 +6,7 @@
     tools:context="com.example.gek.sunshine.DetailActivity">
     <!-- Размещаем тулбар, который наполним уже в коде с помощью отдельного шаблона  -->
     <android.support.v7.widget.Toolbar
-        android:id="@+id/my_toolbar"
+        android:id="@+id/my_toolbar_detail"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
