@@ -14,6 +14,8 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.example.gek.sunshine.data.WeatherDbHelper;
+
 
 public class MainActivity extends AppCompatActivity {
     private final String LOG_TAG = "MyLog: ";
@@ -36,6 +38,7 @@ public class MainActivity extends AppCompatActivity {
         if (!isOnline()) {
             Toast.makeText(this, "No internet connection!", Toast.LENGTH_SHORT);
         }
+
     }
 
     /** Проверяем есть ли интернет */
