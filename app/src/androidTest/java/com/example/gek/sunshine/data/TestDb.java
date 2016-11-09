@@ -124,7 +124,6 @@ public class TestDb extends AndroidTestCase {
         testValues.put(WeatherContract.LocationEntry.COLUMN_COORD_LAT, 64.7488);
         testValues.put(WeatherContract.LocationEntry.COLUMN_COORD_LONG, -147.353);
 
-
         // Insert ContentValues into database and get a row ID back
         long idRow = db.insert(WeatherContract.LocationEntry.TABLE_NAME,
                 null,
@@ -152,7 +151,6 @@ public class TestDb extends AndroidTestCase {
         TestUtilities.validateCurrentRecord("Error: Location Query Validation Failed",
                                 cursor, testValues);
 
-
         // Finally, close the cursor and database
         cursor.close();
         db.close();
@@ -165,8 +163,47 @@ public class TestDb extends AndroidTestCase {
         also make use of the validateCurrentRecord function from within TestUtilities.
      */
     public void testWeatherTable() {
+        WeatherDbHelper dbHelper = new WeatherDbHelper(mContext);
+        SQLiteDatabase db =  dbHelper.getWritableDatabase();
+
         // First insert the location, and then use the locationRowId to insert
         // the weather. Make sure to cover as many failure cases as you can.
+
+        ContentValues testValues = new ContentValues();
+        testValues.put(WeatherContract.LocationEntry.COLUMN_LOCATION_SETTING, "99705");
+        testValues.put(WeatherContract.LocationEntry.COLUMN_CITY_NAME, "North Pole");
+        testValues.put(WeatherContract.LocationEntry.COLUMN_COORD_LAT, 64.7488);
+        testValues.put(WeatherContract.LocationEntry.COLUMN_COORD_LONG, -147.353);
+
+        long idRow = db.insert(WeatherContract.LocationEntry.TABLE_NAME,
+                null,
+                testValues);
+
+        ContentValues cvWeather = TestUtilities.createWeatherValues(idRow);
+
+        // Insert ContentValues into database and get a row ID back
+
+        long idRowWheather = db.insert(WeatherContract.WeatherEntry.TABLE_NAME,
+                null,
+                cvWeather);
+
+        Cursor cursor = db.query(
+                WeatherContract.WeatherEntry.TABLE_NAME,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null
+        );
+
+        assertTrue( "Error: No Records returned from location query", cursor.moveToFirst() );
+
+        TestUtilities.validateCurrentRecord("Error: Location Query Validation Failed",
+                cursor, cvWeather);
+
+        cursor.close();
+        db.close();
 
         // Instead of rewriting all of the code we've already written in testLocationTable
         // we can move this code to insertLocation and then call insertLocation from both
