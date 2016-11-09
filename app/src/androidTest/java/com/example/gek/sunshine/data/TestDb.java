@@ -15,6 +15,7 @@
  */
 package com.example.gek.sunshine.data;
 
+import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.test.AndroidTestCase;
@@ -112,22 +113,49 @@ public class TestDb extends AndroidTestCase {
     */
     public void testLocationTable() {
         // First step: Get reference to writable database
+        WeatherDbHelper dbHelper = new WeatherDbHelper(mContext);
+        SQLiteDatabase db =  dbHelper.getWritableDatabase();
 
         // Create ContentValues of what you want to insert
         // (you can use the createNorthPoleLocationValues if you wish)
+        ContentValues testValues = new ContentValues();
+        testValues.put(WeatherContract.LocationEntry.COLUMN_LOCATION_SETTING, "99705");
+        testValues.put(WeatherContract.LocationEntry.COLUMN_CITY_NAME, "North Pole");
+        testValues.put(WeatherContract.LocationEntry.COLUMN_COORD_LAT, 64.7488);
+        testValues.put(WeatherContract.LocationEntry.COLUMN_COORD_LONG, -147.353);
+
 
         // Insert ContentValues into database and get a row ID back
+        long idRow = db.insert(WeatherContract.LocationEntry.TABLE_NAME,
+                null,
+                testValues);
+        assertTrue(idRow != -1);
 
         // Query the database and receive a Cursor back
 
+        Cursor cursor = db.query(
+                WeatherContract.LocationEntry.TABLE_NAME,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null
+        );
+
         // Move the cursor to a valid database row
+        assertTrue( "Error: No Records returned from location query", cursor.moveToFirst() );
 
         // Validate data in resulting Cursor with the original ContentValues
         // (you can use the validateCurrentRecord function in TestUtilities to validate the
         // query if you like)
+        TestUtilities.validateCurrentRecord("Error: Location Query Validation Failed",
+                                cursor, testValues);
+
 
         // Finally, close the cursor and database
-
+        cursor.close();
+        db.close();
     }
 
     /*

@@ -22,7 +22,8 @@ import junit.framework.TestSuite;
 
 public class FullTestSuite extends TestSuite {
     public static Test suite() {
-        return new TestSuiteBuilder(FullTestSuite.class).includeAllPackagesUnderHere().build();
+//        return new TestSuiteBuilder(FullTestSuite.class).includeAllPackagesUnderHere().build();
+        return new TestSuiteBuilder(FullTestSuite.class).build();
     }
 
     public FullTestSuite() {
