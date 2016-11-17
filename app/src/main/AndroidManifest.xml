@@ -16,7 +16,7 @@
 
         <provider
             android:authorities="com.example.gek.sunshine"
-            android:name="com.example.gek.sunshine.data.WeatherProvider" />
+            android:name=".data.WeatherProvider" />
 
         <activity android:name="com.example.gek.sunshine.MainActivity">
             <intent-filter>
