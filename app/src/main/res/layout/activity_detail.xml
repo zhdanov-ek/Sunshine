@@ -17,7 +17,7 @@
 
     <!-- Тут будет размещен фрагмент, который будет взаимодействовать с тулбаром  -->
     <FrameLayout
-        android:id="@+id/container_detail"
+        android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
     </FrameLayout>
